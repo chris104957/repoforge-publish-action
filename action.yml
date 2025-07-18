@@ -6,9 +6,6 @@ inputs:
 		description: 'Type of package to be published'
 		required: true
 		default: 'python'
-		options:
-			- python
-			- docker
 	api_token:
 		description: 'API token for RepoForge. Must have upload permissions for Python.'
 		required: true
@@ -36,7 +33,6 @@ inputs:
 		description: 'Build arguments for the Docker image'
 		required: false
 		default: ''
-
 	# python inputs
 	package_dir:
 		description: 'Path to the directory containing the package'
