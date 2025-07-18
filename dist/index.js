@@ -27479,7 +27479,14 @@ async function publishDockerImage({ apiToken, hashId, registryName, dockerContex
   const dockerfilePath = external_path_.join(absContext, dockerfile);
 
   core.info(`Logging into RepoForge Docker registry as __token__`);
-  await exec.exec(`echo ${apiToken} | docker login ${repoPath} -u __token__ --password-stdin`);
+  await exec.exec(
+	'docker',
+	['login', 'docker.repoforge.io', '-u', '__token__', '--password-stdin'],
+	{
+	  input: Buffer.from(apiToken),
+	}
+  );
+  core.info(`Logged into RepoForge Docker registry as __token__`);
 
   core.info(`Building Docker image "${registryName}"`);
   await exec.exec(`docker build -t ${registryName} ${absContext} -f ${dockerfilePath} ${buildArgs}`);
