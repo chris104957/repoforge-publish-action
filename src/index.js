@@ -1,16 +1,17 @@
 import * as core from '@actions/core';
 import { publishPythonPackage } from './languages/python.js';
 import { publishDockerImage } from './languages/docker.js';
+import { publishNpmPackage } from './languages/npm.js';
 
 async function run() {
   try {
     const packageType = core.getInput('package_type') || 'python';
     const apiToken = core.getInput('api_token', { required: true });
     const hashId = core.getInput('hash_id', { required: true });
+    const packageDir = core.getInput('package_dir', { required: true });
     
     switch (packageType.toLowerCase()) {
       case 'python':
-        const packageDir = core.getInput('package_dir', { required: true });
         await publishPythonPackage({ apiToken, hashId, packageDir });
         break;
       case 'docker':
@@ -21,6 +22,9 @@ async function run() {
         const buildArgs = core.getInput('build_args', { required: false });
     
         await publishDockerImage({ apiToken, hashId, registryName, dockerTag, dockerContext, dockerfile, buildArgs });
+        break;
+      case 'npm':
+        await publishNpmPackage({ apiToken, hashId, packageDir });
         break;
       default:
         core.setFailed(`Unsupported package_type: ${packageType}`);

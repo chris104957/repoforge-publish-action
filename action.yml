@@ -5,6 +5,10 @@ inputs:
     description: 'Type of package to be published'
     required: true
     default: 'python'
+    options:
+      - python
+      - docker
+      - npm
   api_token:
     description: 'API token for RepoForge. Must have upload permissions for Python.'
     required: true
