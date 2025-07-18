@@ -27460,7 +27460,40 @@ async function publishPythonPackage({ apiToken, hashId, packageDir }) {
   await exec.exec(command.join(' '));
 }
 
+;// CONCATENATED MODULE: ./src/languages/docker.js
+
+
+
+
+
+async function publishDockerImage({ apiToken, hashId, registryName, dockerContext, dockerfile, dockerTag }) {
+  if (!registryName) {
+    core.setFailed('Input "registry_name" is required for Docker publishing.');
+    return;
+  }
+
+  const lowercaseHash = hashId.toLowerCase();
+  const repoPath = `docker.repoforge.io/${lowercaseHash}/${registryName}`;
+  const taggedImage = `${repoPath}:${dockerTag}`;
+  const absContext = external_path_.resolve(dockerContext);
+  const dockerfilePath = external_path_.join(absContext, dockerfile);
+
+
+  core.info(`Logging into RepoForge Docker registry as __token__`);
+  await exec.exec(`echo ${apiToken} | docker login ${repoPath} -u __token__ --password-stdin`);
+
+  core.info(`Building Docker image "${registryName}"`);
+  await exec.exec(`docker build -t ${registryName} ${absContext} -f ${dockerfilePath}`);
+
+  core.info(`Tagging image as "${taggedImage}"`);
+  await exec.exec(`docker tag ${registryName} ${taggedImage}`);
+
+  core.info(`Pushing image to ${taggedImage}`);
+  await exec.exec(`docker push ${taggedImage}`);
+}
+
 ;// CONCATENATED MODULE: ./src/index.js
+
 
 
 
@@ -27470,10 +27503,15 @@ async function run() {
     const apiToken = core.getInput('api_token', { required: true });
     const hashId = core.getInput('hash_id', { required: true });
     const packageDir = core.getInput('package_dir', { required: true });
+    const dockerTag = core.getInput('docker_tag', { required: false });
+    const registryName = core.getInput('registry_name', { required: false });
 
     switch (packageType.toLowerCase()) {
       case 'python':
         await publishPythonPackage({ apiToken, hashId, packageDir });
+        break;
+      case 'docker':
+        await publishDockerImage({ apiToken, hashId, registryName, dockerTag });
         break;
       default:
         core.setFailed(`Unsupported package_type: ${packageType}`);

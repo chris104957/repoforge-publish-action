@@ -1,6 +1,14 @@
 name: 'RepoForge Publish'
 description: 'Publish Python, Docker or NPM packages to RepoForge from GitHub Actions'
 inputs:
+  docker_context:
+    description: "Directory to use as the Docker build context"
+    required: false
+    default: "."
+  dockerfile:
+    description: "Path to the Dockerfile (relative to context)"
+    required: false
+    default: "Dockerfile"
   docker_tag:
     description: 'Tag to use for the Docker image. Defaults to the current commit hash.'
     required: false
