@@ -23,24 +23,28 @@ export async function publishPythonPackage({ apiToken, hashId, packageDir }) {
     `${absPath}/*`,
   ];
   
-  let stderr = '';
+
+  let output = '';
   const options = {
     listeners: {
+      stdout: (data) => {
+        output += data.toString();
+      },
       stderr: (data) => {
-        stderr += data.toString();
+        output += data.toString(); // sometimes twine writes to stderr too
       },
     },
-    ignoreReturnCode: true, // Allow us to handle non-zero codes manually
+    ignoreReturnCode: true,
   };
 
   const exitCode = await exec.exec(command.join(' '), [], options);
 
   if (exitCode === 0) {
     core.info('Package published successfully.');
-  } else if (stderr.includes('409') || stderr.toLowerCase().includes('file already exists')) {
-    core.warning('Package version already exists — skipping upload.');
+  } else if (output.includes('409') || output.toLowerCase().includes('conflict')) {
+    core.warning('Package version already exists. Skipping upload.');
   } else {
-    core.setFailed(`twine upload failed:\n${stderr}`);
+    core.setFailed(`twine upload failed:\n${output}`);
   }
 
 }
