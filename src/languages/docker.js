@@ -15,7 +15,6 @@ export async function publishDockerImage({ apiToken, hashId, registryName, docke
   const absContext = path.resolve(dockerContext);
   const dockerfilePath = path.join(absContext, dockerfile);
 
-
   core.info(`Logging into RepoForge Docker registry as __token__`);
   await exec.exec(`echo ${apiToken} | docker login ${repoPath} -u __token__ --password-stdin`);
 
