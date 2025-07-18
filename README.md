@@ -1,10 +1,6 @@
-![Test](https://github.com/your-username/repoforge-publish-action/actions/workflows/test.yml/badge.svg)
-
 # RepoForge.io Publish Action
 
-<p align="center">
-  <img src="./img/logo.png" alt="RepoForge.io logo" height="100">
-</p>
+![RepoForge.io logo](./img/logo.png)
 
 **GitHub Action to publish Python, Docker, and NPM packages to [RepoForge.io](https://repoforge.io)**
 
