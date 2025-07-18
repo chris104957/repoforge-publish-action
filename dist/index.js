@@ -27456,7 +27456,8 @@ async function publishPythonPackage({ apiToken, hashId, packageDir }) {
     apiToken,
     `${absPath}/*`,
   ];
-
+  
+  let stderr = '';
   const options = {
     listeners: {
       stderr: (data) => {
