@@ -1,41 +1,50 @@
 name: 'RepoForge Publish'
 description: 'Publish Python, Docker or NPM packages to RepoForge from GitHub Actions'
 inputs:
-  docker_context:
-    description: "Directory to use as the Docker build context"
-    required: false
-    default: "."
-  dockerfile:
-    description: "Path to the Dockerfile (relative to context)"
-    required: false
-    default: "Dockerfile"
-  docker_tag:
-    description: 'Tag to use for the Docker image. Defaults to the current commit hash.'
-    required: false
-    default: 'latest'
-  package_type:
-    description: 'Type of package to be published'
-    required: true
-    default: 'python'
-    options:
-      - python
-      - docker
-  registry_name:
-    description: 'Name of the Docker registry to publish to. Required where package_type=docker'
-    required: false
-  api_token:
-    description: 'API token for RepoForge. Must have upload permissions for Python.'
-    required: true
-  hash_id:
-    description: 'RepoForge hash ID'
-    required: true
-  package_dir:
-    description: 'Path to the directory containing the package'
-    default: './dist'
-    required: false
+  # core inputs
+	package_type:
+		description: 'Type of package to be published'
+		required: true
+		default: 'python'
+		options:
+			- python
+			- docker
+	api_token:
+		description: 'API token for RepoForge. Must have upload permissions for Python.'
+		required: true
+	hash_id:
+		description: 'RepoForge hash ID'
+		required: true
+
+  # docker inputs
+	docker_context:
+		description: "Directory to use as the Docker build context"
+		required: false
+		default: "."
+	dockerfile:
+		description: "Path to the Dockerfile (relative to context)"
+		required: false
+		default: "Dockerfile"
+	docker_tag:
+		description: 'Tag to use for the Docker image. Defaults to the current commit hash.'
+		required: false
+		default: 'latest'
+	registry_name:
+		description: 'Name of the Docker registry to publish to. Required where package_type=docker'
+		required: false
+	build_args:
+		description: 'Build arguments for the Docker image'
+		required: false
+		default: ''
+
+	# python inputs
+	package_dir:
+		description: 'Path to the directory containing the package'
+		default: './dist'
+		required: false
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+	using: 'node12'
+	main: 'dist/index.js'
 branding:
-  icon: 'package'
-  color: 'blue'
+	icon: 'package'
+	color: 'blue'

@@ -18,9 +18,9 @@ async function run() {
         const registryName = core.getInput('registry_name', { required: true });
         const dockerContext = core.getInput('docker_context', { required: false });
         const dockerfile = core.getInput('dockerfile', { required: false });
+        const buildArgs = core.getInput('build_args', { required: false });
     
-    
-        await publishDockerImage({ apiToken, hashId, registryName, dockerTag, dockerContext, dockerfile });
+        await publishDockerImage({ apiToken, hashId, registryName, dockerTag, dockerContext, dockerfile, buildArgs });
         break;
       default:
         core.setFailed(`Unsupported package_type: ${packageType}`);

@@ -3,7 +3,7 @@ import * as exec from '@actions/exec';
 import path from 'path';
 
 
-export async function publishDockerImage({ apiToken, hashId, registryName, dockerContext, dockerfile, dockerTag }) {
+export async function publishDockerImage({ apiToken, hashId, registryName, dockerContext, dockerfile, dockerTag, buildArgs }) {
   if (!registryName) {
     core.setFailed('Input "registry_name" is required for Docker publishing.');
     return;
@@ -19,7 +19,7 @@ export async function publishDockerImage({ apiToken, hashId, registryName, docke
   await exec.exec(`echo ${apiToken} | docker login ${repoPath} -u __token__ --password-stdin`);
 
   core.info(`Building Docker image "${registryName}"`);
-  await exec.exec(`docker build -t ${registryName} ${absContext} -f ${dockerfilePath}`);
+  await exec.exec(`docker build -t ${registryName} ${absContext} -f ${dockerfilePath} ${buildArgs}`);
 
   core.info(`Tagging image as "${taggedImage}"`);
   await exec.exec(`docker tag ${registryName} ${taggedImage}`);
