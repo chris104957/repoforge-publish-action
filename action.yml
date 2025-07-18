@@ -1,6 +1,20 @@
 name: 'RepoForge Publish'
 description: 'Publish Python, Docker or NPM packages to RepoForge from GitHub Actions'
 inputs:
+  docker_tag:
+    description: 'Tag to use for the Docker image. Defaults to the current commit hash.'
+    required: false
+    default: 'latest'
+  package_type:
+    description: 'Type of package to be published'
+    required: true
+    default: 'python'
+    options:
+      - python
+      - docker
+  registry_name:
+    description: 'Name of the Docker registry to publish to. Required where package_type=docker'
+    required: false
   api_token:
     description: 'API token for RepoForge. Must have upload permissions for Python.'
     required: true
