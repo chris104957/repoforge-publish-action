@@ -1,27 +1,144 @@
-# RepoForge Publish Action
+![Test](https://github.com/your-username/repoforge-publish-action/actions/workflows/test.yml/badge.svg)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+# RepoForge.io Publish Action
 
-Publish packages to [RepoForge.io](https://repoforge.io) from your GitHub Actions workflow.
+<p align="center">
+  <img src="./img/logo.png" alt="RepoForge.io logo" height="100">
+</p>
 
-## 🚀 Features
+**GitHub Action to publish Python, Docker, and NPM packages to [RepoForge.io](https://repoforge.io)**
 
-- Supports publishing private Python, Docker, Debian, and NPM packages
-- Works seamlessly with GitHub-hosted runners
-- CI/CD-friendly – no manual steps required
-- Secure token-based authentication
+Supports future extensibility (Conda, Debian coming soon).
 
-## 🔧 Usage
+## 📦 About RepoForge.io
 
-Add the following step to your GitHub Actions workflow:
+[RepoForge.io](https://repoforge.io) is a modern, ultra-fast package registry supporting Python, Docker, NPM, and more.
+
+- Built for developers, by developers.
+- Clean UI, fast CLI workflows.
+- Affordable, encrypted, no nonsense.
+
+
+## 🚀 Supported Package Types
+
+| Package Type | Supported? | Notes |
+|--------------|------------|-------|
+| Python       | ✅          | Upload `.tar.gz` / `.whl` using Twine |
+| Docker       | ✅          | Authenticated push to RepoForge.io container registry |
+| NPM          | ✅          | Scoped NPM publishing with token-based auth |
+| Conda        | 🔜          | Coming soon |
+| Debian       | 🔜          | Coming soon |
+
+
+
+## 🔧 Inputs
+
+Inputs vary based on the selected `package_type`.
+
+### Core Inputs (All Types)
+
+| Name         | Required | Description |
+|--------------|----------|-------------|
+| `package_type` | ✅ | `python`, `docker`, or `npm` |
+| `api_token`  | ✅ | Access token from RepoForge.io (must have upload/write permissions for selected type) |
+| `hash_id`    | ✅ | Your RepoForge.io account hash ID (used in URLs) |
+
+### Python Inputs
+
+| Name         | Required | Description |
+|--------------|----------|-------------|
+| `package_dir` | ❌ | Directory containing Python build artifacts (default: `./dist`) |
+| `fail_on_conflict` | ❌ | Whether to fail if package version already exists (default: `false`) |
+
+---
+
+### Docker Inputs
+
+| Name         | Required | Description |
+|--------------|----------|-------------|
+| `registry_name` | ✅ when `package_type=docker` | Name of your Docker repository |
+| `docker_context` | ❌ | Build context directory (default: `"."`) |
+| `dockerfile` | ❌ | Path to Dockerfile relative to context (default: `"Dockerfile"`) |
+| `docker_tag` | ❌ | Image tag to use (default: `"latest"`) |
+
+---
+
+### NPM Inputs
+
+| Name         | Required | Description |
+|--------------|----------|-------------|
+| `package_dir` | ❌ | Path to your NPM package directory (default: `"./npm"`) |
+
+---
+
+## 📸 Where to Find Your RepoForge.io Credentials
+
+### Hash ID
+Your **Hash ID** is visible under your RepoForge.io account details:
+
+![Hash ID Screenshot](./img/hash-id.png)
+
+### API Token
+Create a **new API token** in RepoForge.io settings:
+
+- Must have write/upload permission for the intended package type
+- For Docker: enable "Docker - Full access"
+- For Python: enable "Python - Full access"
+- For NPM: enable "NPM - Full access"
+
+![Access Token Screenshot](./img/api-token.png)
+
+## 🧪 Usage
+
+For more examples, refer to the repository [here](https://github.com/chris104957/repoforge-publish-action-test)
 
 ```yaml
-- name: Publish to RepoForge.io
-  uses: repoforge/publish-action@v1
-  with:
-    api_token: ${{ secrets.REPOFORGE_TOKEN }}
-	hash_id: my_unique_hash
-    package_path: ./dist/
-    repository: my-private-repo
-    format: python
-```
+name: Publish to RepoForge.io
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Publish package
+        uses: chris104957/repoforge-publish-action@main
+        with:
+          package_type: python  # or docker / npm
+          api_token: ${{ secrets.REPOFORGE_TOKEN }}
+          hash_id: ${{ secrets.REPOFORGE_HASH_ID }}
+          package_dir: ./dist
+````
+
+---
+
+## 📍 Roadmap
+
+* [x] Python (twine)
+* [x] Docker (OCI image push)
+* [x] NPM (scoped package)
+* [ ] Conda (coming soon)
+* [ ] Debian (coming soon)
+
+---
+
+## 🔗 Links
+
+* 🌐 [RepoForge.io](https://repoforge.io)
+* 🐙 [This GitHub Action](https://github.com/chris104957/repoforge-publish-action)
+* 📖 [RepoForge.io Documentation](https://help.repoforge.io)
+
+---
+
+© [RepoForge.io](https://repoforge.io)
