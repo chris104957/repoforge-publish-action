@@ -27498,7 +27498,11 @@ async function publishDockerImage({ apiToken, hashId, registryName, dockerContex
   await exec.exec(`docker push ${taggedImage}`);
 }
 
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(9896);
 ;// CONCATENATED MODULE: ./src/languages/npm.js
+
+
 
 
 
@@ -27517,7 +27521,7 @@ ${authTokenUrl}=${apiToken}
 `;
 
   const npmrcPath = external_path_.join(absPath, '.npmrc');
-  require('fs').writeFileSync(npmrcPath, npmrcContent.trim());
+  (0,external_fs_.writeFileSync)(npmrcPath, npmrcContent.trim());
 
   await exec.exec('npm publish', [], { cwd: absPath });
 }
