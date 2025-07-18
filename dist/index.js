@@ -27498,7 +27498,32 @@ async function publishDockerImage({ apiToken, hashId, registryName, dockerContex
   await exec.exec(`docker push ${taggedImage}`);
 }
 
+;// CONCATENATED MODULE: ./src/languages/npm.js
+
+
+
+
+async function publishNpmPackage({ apiToken, hashId, packageDir }) {
+  const absPath = external_path_.resolve(packageDir);
+  const registryUrl = `https://api.repoforge.io/npm/${hashId}/`;
+  const authTokenUrl = `//api.repoforge.io/npm/${hashId}/:_authToken`;
+
+  core.info(`Publishing NPM package from ${absPath}`);
+  core.info(`Using registry: ${registryUrl}`);
+
+  const npmrcContent = `
+@repoforge:registry=${registryUrl}
+${authTokenUrl}=${apiToken}
+`;
+
+  const npmrcPath = external_path_.join(absPath, '.npmrc');
+  require('fs').writeFileSync(npmrcPath, npmrcContent.trim());
+
+  await exec.exec('npm publish', [], { cwd: absPath });
+}
+
 ;// CONCATENATED MODULE: ./src/index.js
+
 
 
 
@@ -27508,10 +27533,10 @@ async function run() {
     const packageType = core.getInput('package_type') || 'python';
     const apiToken = core.getInput('api_token', { required: true });
     const hashId = core.getInput('hash_id', { required: true });
+    const packageDir = core.getInput('package_dir', { required: true });
     
     switch (packageType.toLowerCase()) {
       case 'python':
-        const packageDir = core.getInput('package_dir', { required: true });
         await publishPythonPackage({ apiToken, hashId, packageDir });
         break;
       case 'docker':
@@ -27522,6 +27547,9 @@ async function run() {
         const buildArgs = core.getInput('build_args', { required: false });
     
         await publishDockerImage({ apiToken, hashId, registryName, dockerTag, dockerContext, dockerfile, buildArgs });
+        break;
+      case 'npm':
+        await publishNpmPackage({ apiToken, hashId, packageDir });
         break;
       default:
         core.setFailed(`Unsupported package_type: ${packageType}`);
