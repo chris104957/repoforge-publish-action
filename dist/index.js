@@ -27478,7 +27478,6 @@ async function publishDockerImage({ apiToken, hashId, registryName, dockerContex
   const absContext = external_path_.resolve(dockerContext);
   const dockerfilePath = external_path_.join(absContext, dockerfile);
 
-
   core.info(`Logging into RepoForge Docker registry as __token__`);
   await exec.exec(`echo ${apiToken} | docker login ${repoPath} -u __token__ --password-stdin`);
 
@@ -27502,16 +27501,20 @@ async function run() {
     const packageType = core.getInput('package_type') || 'python';
     const apiToken = core.getInput('api_token', { required: true });
     const hashId = core.getInput('hash_id', { required: true });
-    const packageDir = core.getInput('package_dir', { required: true });
-    const dockerTag = core.getInput('docker_tag', { required: false });
-    const registryName = core.getInput('registry_name', { required: false });
-
+    
     switch (packageType.toLowerCase()) {
       case 'python':
+        const packageDir = core.getInput('package_dir', { required: true });
         await publishPythonPackage({ apiToken, hashId, packageDir });
         break;
       case 'docker':
-        await publishDockerImage({ apiToken, hashId, registryName, dockerTag });
+        const dockerTag = core.getInput('docker_tag', { required: false });
+        const registryName = core.getInput('registry_name', { required: true });
+        const dockerContext = core.getInput('docker_context', { required: false });
+        const dockerfile = core.getInput('dockerfile', { required: false });
+    
+    
+        await publishDockerImage({ apiToken, hashId, registryName, dockerTag, dockerContext, dockerfile });
         break;
       default:
         core.setFailed(`Unsupported package_type: ${packageType}`);
