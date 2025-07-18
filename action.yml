@@ -1,0 +1,19 @@
+name: 'RepoForge Publish'
+description: 'Publish Python, Docker or NPM packages to RepoForge from GitHub Actions'
+inputs:
+  api_token:
+    description: 'API token for RepoForge. Must have upload permissions for Python.'
+    required: true
+  hash_id:
+    description: 'RepoForge hash ID'
+    required: true
+  package_dir:
+    description: 'Path to the directory containing the package'
+    default: './dist'
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: 'package'
+  color: 'blue'
