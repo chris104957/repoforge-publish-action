@@ -11,11 +11,12 @@ async function run() {
     const packageDir = core.getInput('package_dir', { required: true });
     
     switch (packageType.toLowerCase()) {
-      case 'python':
+      case 'python': {
         const failOnConflict = core.getInput('fail_on_conflict') === 'true';
         await publishPythonPackage({ apiToken, hashId, packageDir, failOnConflict });
         break;
-      case 'docker':
+      }
+      case 'docker': {
         const dockerTag = core.getInput('docker_tag', { required: false });
         const registryName = core.getInput('registry_name', { required: true });
         const dockerContext = core.getInput('docker_context', { required: false });
@@ -24,11 +25,15 @@ async function run() {
     
         await publishDockerImage({ apiToken, hashId, registryName, dockerTag, dockerContext, dockerfile, buildArgs });
         break;
-      case 'npm':
+      }
+      case 'npm': {
         await publishNpmPackage({ apiToken, hashId, packageDir });
         break;
-      default:
+      }
+      default: {
         core.setFailed(`Unsupported package_type: ${packageType}`);
+        break;
+      }
     }
   } catch (error) {
     core.setFailed(error.message);
