@@ -1,6 +1,7 @@
 name: 'RepoForge Publish'
 description: 'Publish Python, Docker or NPM packages to RepoForge from GitHub Actions'
 inputs:
+  # core inputs
   package_type:
     description: 'Type of package to be published'
     required: true
@@ -15,6 +16,20 @@ inputs:
   hash_id:
     description: 'RepoForge hash ID'
     required: true
+ 
+  # package dir is used by both python and npm
+  package_dir:
+    description: 'Path to the directory containing the package'
+    default: './dist'
+    required: false
+
+  # python inputs
+  fail_on_conflict:
+    description: 'Whether to fail the build on HTTP 409 (version conflict)'
+    required: false
+    default: 'false'
+
+  # docker inputs
   docker_context:
     description: "Directory to use as the Docker build context"
     required: false
@@ -34,10 +49,6 @@ inputs:
     description: 'Build arguments for the Docker image'
     required: false
     default: ''
-  package_dir:
-    description: 'Path to the directory containing the package'
-    default: './dist'
-    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
