@@ -27466,7 +27466,7 @@ async function publishPythonPackage({ apiToken, hashId, packageDir }) {
 
 
 
-async function publishDockerImage({ apiToken, hashId, registryName, dockerContext, dockerfile, dockerTag }) {
+async function publishDockerImage({ apiToken, hashId, registryName, dockerContext, dockerfile, dockerTag, buildArgs }) {
   if (!registryName) {
     core.setFailed('Input "registry_name" is required for Docker publishing.');
     return;
@@ -27482,7 +27482,7 @@ async function publishDockerImage({ apiToken, hashId, registryName, dockerContex
   await exec.exec(`echo ${apiToken} | docker login ${repoPath} -u __token__ --password-stdin`);
 
   core.info(`Building Docker image "${registryName}"`);
-  await exec.exec(`docker build -t ${registryName} ${absContext} -f ${dockerfilePath}`);
+  await exec.exec(`docker build -t ${registryName} ${absContext} -f ${dockerfilePath} ${buildArgs}`);
 
   core.info(`Tagging image as "${taggedImage}"`);
   await exec.exec(`docker tag ${registryName} ${taggedImage}`);
@@ -27512,9 +27512,9 @@ async function run() {
         const registryName = core.getInput('registry_name', { required: true });
         const dockerContext = core.getInput('docker_context', { required: false });
         const dockerfile = core.getInput('dockerfile', { required: false });
+        const buildArgs = core.getInput('build_args', { required: false });
     
-    
-        await publishDockerImage({ apiToken, hashId, registryName, dockerTag, dockerContext, dockerfile });
+        await publishDockerImage({ apiToken, hashId, registryName, dockerTag, dockerContext, dockerfile, buildArgs });
         break;
       default:
         core.setFailed(`Unsupported package_type: ${packageType}`);
