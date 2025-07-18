@@ -1,3 +1,6 @@
+[![Marketplace](https://img.shields.io/badge/GitHub%20Action-RepoForge.io%20Publish-blue?logo=github)](https://github.com/marketplace/actions/repoforge-publish)
+
+
 # RepoForge.io Publish Action
 
 ![RepoForge.io logo](./img/logo.png)
