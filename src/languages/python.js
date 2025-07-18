@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import path from 'path';
 
-export async function publishPythonPackage({ apiToken, hashId, packageDir }) {
+export async function publishPythonPackage({ apiToken, hashId, packageDir, failOnConflict }) {
   const uploadUrl = `https://api.repoforge.io/${hashId}/`;
   const absPath = path.resolve(packageDir);
 
@@ -42,7 +42,12 @@ export async function publishPythonPackage({ apiToken, hashId, packageDir }) {
   if (exitCode === 0) {
     core.info('Package published successfully.');
   } else if (output.includes('409') || output.toLowerCase().includes('conflict')) {
-    core.warning('Package version already exists. Skipping upload.');
+    const msg = 'Package version already exists (409 Conflict).';
+    if (failOnConflict) {
+      core.setFailed(`${msg} Failing as per configuration.`);
+    } else {
+      core.warning(`${msg} Skipping upload.`);
+    }
   } else {
     core.setFailed(`twine upload failed:\n${output}`);
   }

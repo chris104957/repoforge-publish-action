@@ -12,7 +12,8 @@ async function run() {
     
     switch (packageType.toLowerCase()) {
       case 'python':
-        await publishPythonPackage({ apiToken, hashId, packageDir });
+        const failOnConflict = core.getInput('fail_on_conflict') === 'true';
+        await publishPythonPackage({ apiToken, hashId, packageDir, failOnConflict });
         break;
       case 'docker':
         const dockerTag = core.getInput('docker_tag', { required: false });

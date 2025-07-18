@@ -27436,7 +27436,7 @@ var external_path_ = __nccwpck_require__(6928);
 
 
 
-async function publishPythonPackage({ apiToken, hashId, packageDir }) {
+async function publishPythonPackage({ apiToken, hashId, packageDir, failOnConflict }) {
   const uploadUrl = `https://api.repoforge.io/${hashId}/`;
   const absPath = external_path_.resolve(packageDir);
 
@@ -27476,7 +27476,12 @@ async function publishPythonPackage({ apiToken, hashId, packageDir }) {
   if (exitCode === 0) {
     core.info('Package published successfully.');
   } else if (output.includes('409') || output.toLowerCase().includes('conflict')) {
-    core.warning('Package version already exists. Skipping upload.');
+    const msg = 'Package version already exists (409 Conflict).';
+    if (failOnConflict) {
+      core.setFailed(`${msg} Failing as per configuration.`);
+    } else {
+      core.warning(`${msg} Skipping upload.`);
+    }
   } else {
     core.setFailed(`twine upload failed:\n${output}`);
   }
@@ -27564,7 +27569,8 @@ async function run() {
     
     switch (packageType.toLowerCase()) {
       case 'python':
-        await publishPythonPackage({ apiToken, hashId, packageDir });
+        const failOnConflict = core.getInput('fail_on_conflict') === 'true';
+        await publishPythonPackage({ apiToken, hashId, packageDir, failOnConflict });
         break;
       case 'docker':
         const dockerTag = core.getInput('docker_tag', { required: false });
